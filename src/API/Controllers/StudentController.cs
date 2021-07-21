@@ -1,38 +1,47 @@
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading.Tasks;
 using API.DLL.Models;
+using API.DLL.Repositories;
 using Microsoft.AspNetCore.Mvc;
 
 namespace API.Controllers
 {
     public class StudentController : BaseApiController
     {
-        [HttpGet]
-        public IActionResult GetAll()
+        private readonly IStudentRepository studentRepository;
+
+        public StudentController(IStudentRepository studentRepository)
         {
-            return Ok(StudentStatic.GetAllStudents());
+            this.studentRepository = studentRepository;
+        }
+
+        [HttpGet]
+        public async Task<IActionResult> GetAll()
+        {
+            return Ok(await studentRepository.GetAllAsync());
         }
 
         [HttpGet("{email}")]
-        public IActionResult GetAll(string email)
+        public async Task<IActionResult> GetAll(string email)
         {
-            return Ok(StudentStatic.GetStudent(email));
+            return Ok(await studentRepository.GetAsync(email));
         }
 
         [HttpPost]
-        public IActionResult Insert(Student student)
+        public async Task<IActionResult> Insert(Student student)
         {
             return Ok(StudentStatic.InsertStudent(student));
         }
 
         [HttpPut("{email}")]
-        public IActionResult Update(string email, Student student)
+        public async Task<IActionResult> Update(string email, Student student)
         {
             return Ok(StudentStatic.UpdateStudent(email, student));
         }
 
         [HttpDelete("{email}")]
-        public IActionResult Delete(string email)
+        public async Task<IActionResult> Delete(string email)
         {
             return Ok(StudentStatic.DeleteStudent(email));
         }
