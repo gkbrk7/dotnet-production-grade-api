@@ -14,6 +14,7 @@ namespace API.DLL
 
             #region RepositoryDependencies
             services.AddTransient<IDepartmentRepository, DepartmentRepository>();
+            services.AddTransient<IStudentRepository, StudentRepository>();
             #endregion
         }
     }

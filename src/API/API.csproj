@@ -7,6 +7,6 @@
     <PackageReference Include="Microsoft.AspNetCore.Mvc.Versioning" Version="5.0.0" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\API.DLL\API.DLL.csproj" />
+    <ProjectReference Include="..\API.BLL\API.BLL.csproj" />
   </ItemGroup>
 </Project>
