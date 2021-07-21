@@ -1,77 +1,48 @@
 using System.Collections.Generic;
 using System.Linq;
-using API.Models;
+using System.Threading.Tasks;
+using API.DLL.Models;
+using API.DLL.Repositories;
 using Microsoft.AspNetCore.Mvc;
 
 namespace API.Controllers
 {
-    [ApiVersion("1.0")]
-    [Route("api/v{version:apiVersion}/[controller]")]
-    [ApiController]
-    public class DepartmentController : ControllerBase
+    public class DepartmentController : BaseApiController
     {
-        [HttpGet]
-        public IActionResult GetAll()
+        private readonly IDepartmentRepository departmentRepository;
+        public DepartmentController(IDepartmentRepository departmentRepository)
         {
-            return Ok(DepartmentStatic.GetAllDepartments());
+            this.departmentRepository = departmentRepository;
+        }
+
+        [HttpGet]
+        public async Task<IActionResult> GetAll()
+        {
+            return Ok(await departmentRepository.GetAllAsync());
         }
 
         [HttpGet("{code}")]
-        public IActionResult GetAll(string code)
+        public async Task<IActionResult> GetAll(string code)
         {
-            return Ok(DepartmentStatic.GetDepartment(code));
+            return Ok(await departmentRepository.GetAsync(code));
         }
 
         [HttpPost]
-        public IActionResult Insert(Department department)
+        public async Task<IActionResult> Insert(Department department)
         {
-            return Ok(DepartmentStatic.InsertDepartment(department));
+            return Ok(await departmentRepository.InsertAsync(department));
         }
 
         [HttpPut("{code}")]
-        public IActionResult Update(string code, Department department)
+        public async Task<IActionResult> Update(string code, Department department)
         {
-            return Ok(DepartmentStatic.UpdateDepartment(code, department));
+            return Ok(await departmentRepository.UpdateAsync(code, department));
         }
 
         [HttpDelete("{code}")]
-        public IActionResult Delete(string code)
+        public async Task<IActionResult> Delete(string code)
         {
-            return Ok(DepartmentStatic.DeleteDepartment(code));
-        }
-    }
-
-    public static class DepartmentStatic
-    {
-        private static List<Department> AllDepartments { get; set; } = new List<Department>();
-        public static Department InsertDepartment(Department department)
-        {
-            AllDepartments.Add(department);
-            return department;
-        }
-
-        public static IEnumerable<Department> GetAllDepartments()
-        {
-            return AllDepartments;
-        }
-
-        public static Department GetDepartment(string code)
-        {
-            return AllDepartments.FirstOrDefault(x => x.Code == code);
-        }
-
-        public static Department UpdateDepartment(string code, Department department)
-        {
-            var updated = AllDepartments.Where(x => x.Code == code).FirstOrDefault();
-            updated.Name = department.Name;
-            return department;
-        }
-
-        public static Department DeleteDepartment(string code)
-        {
-            var deleted = AllDepartments.FirstOrDefault(x => x.Code == code);
-            AllDepartments.Remove(deleted);
-            return deleted;
+            return Ok(await departmentRepository.DeleteAsync(code));
         }
     }
 }
