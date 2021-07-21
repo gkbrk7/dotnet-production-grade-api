@@ -9,10 +9,12 @@ namespace API.DLL.Repositories
     public interface IDepartmentRepository
     {
         Task<Department> InsertAsync(Department department);
-        Task<Department> UpdateAsync(string code, Department department);
-        Task<Department> DeleteAsync(string code);
+        Task<bool> UpdateAsync(Department department);
+        Task<bool> DeleteAsync(Department department);
         Task<IEnumerable<Department>> GetAllAsync();
         Task<Department> GetAsync(string code);
+        Task<Department> FindByName(string name);
+        Task<Department> FindByCode(string code);
     }
 
     public class DepartmentRepository : IDepartmentRepository
@@ -24,12 +26,20 @@ namespace API.DLL.Repositories
             this.context = context;
         }
 
-        public async Task<Department> DeleteAsync(string code)
+        public async Task<bool> DeleteAsync(Department department)
         {
-            var department = await context.Departments.FirstOrDefaultAsync(x => x.Code == code);
             context.Entry(department).State = EntityState.Deleted;
-            await context.SaveChangesAsync();
-            return department;
+            return await context.SaveChangesAsync() > 0 ? true : false;
+        }
+
+        public async Task<Department> FindByCode(string code)
+        {
+            return await context.Departments.FirstOrDefaultAsync(x => x.Code == code);
+        }
+
+        public async Task<Department> FindByName(string name)
+        {
+            return await context.Departments.FirstOrDefaultAsync(x => x.Name == name);
         }
 
         public async Task<IEnumerable<Department>> GetAllAsync()
@@ -49,13 +59,10 @@ namespace API.DLL.Repositories
             return department;
         }
 
-        public async Task<Department> UpdateAsync(string code, Department department)
+        public async Task<bool> UpdateAsync(Department department)
         {
-            var _department = await context.Departments.FirstOrDefaultAsync(x => x.Code == code);
-            _department.Name = department.Name;
-            context.Entry(_department).State = EntityState.Modified;
-            await context.SaveChangesAsync();
-            return _department;
+            context.Entry(department).State = EntityState.Modified;
+            return await context.SaveChangesAsync() > 0 ? true : false;
         }
     }
 }

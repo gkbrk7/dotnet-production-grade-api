@@ -3,6 +3,7 @@ using System.Threading.Tasks;
 using API.BLL;
 using API.DLL;
 using API.Extensions;
+using FluentValidation.AspNetCore;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.HttpsPolicy;
