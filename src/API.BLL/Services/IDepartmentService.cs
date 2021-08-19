@@ -28,12 +28,14 @@ namespace API.BLL.Services
         }
         public async Task<Department> DeleteAsync(string code)
         {
-            var department = await departmentRepository.GetAsync(code);
+            var department = await departmentRepository.FindSingleAsync(x => x.Code == code);
 
             if (department == null)
                 throw new ApplicationValidationException("Department Not Found");
 
-            if (await departmentRepository.DeleteAsync(department))
+            departmentRepository.DeleteAsync(department);
+
+            if (await departmentRepository.SaveCompletedAsync())
                 return department;
 
             throw new ApplicationValidationException("An Error Occured Deleting Data");
@@ -41,12 +43,13 @@ namespace API.BLL.Services
 
         public async Task<IEnumerable<Department>> GetAllAsync()
         {
-            return await departmentRepository.GetAllAsync();
+            return await departmentRepository.GetList();
         }
 
         public async Task<Department> GetAsync(string code)
         {
-            var department = await departmentRepository.GetAsync(code);
+            var department = await departmentRepository.FindSingleAsync(x => x.Code == code);
+
             if (department == null)
                 throw new ApplicationValidationException("Department Not Found");
 
@@ -60,13 +63,18 @@ namespace API.BLL.Services
                 Code = request.Code,
                 Name = request.Name
             };
+            await departmentRepository.CreateAsync(department);
 
-            return await departmentRepository.InsertAsync(department);
+            if (await departmentRepository.SaveCompletedAsync())
+            {
+                return department;
+            }
+            throw new ApplicationValidationException($"Department Insertion Operation Unsuccessful");
         }
 
         public async Task<bool> IsCodeExists(string code)
         {
-            var department = await departmentRepository.FindByCode(code);
+            var department = await departmentRepository.FindSingleAsync(x => x.Code == code);
             if (department == null)
                 return true;
 
@@ -75,7 +83,7 @@ namespace API.BLL.Services
 
         public async Task<bool> IsNameExists(string name)
         {
-            var department = await departmentRepository.FindByName(name);
+            var department = await departmentRepository.FindSingleAsync(x => x.Name == name);
             if (department == null)
                 return true;
 
@@ -84,14 +92,14 @@ namespace API.BLL.Services
 
         public async Task<Department> UpdateAsync(string code, Department department)
         {
-            var _department = await departmentRepository.GetAsync(code);
+            var _department = await departmentRepository.FindSingleAsync(x => x.Code == code);
 
             if (_department == null)
                 throw new ApplicationValidationException("Department Not Found");
 
             if (!string.IsNullOrWhiteSpace(department.Code))
             {
-                var existsAlreadyCode = await departmentRepository.FindByCode(department.Code);
+                var existsAlreadyCode = await departmentRepository.FindSingleAsync(x => x.Code == code);
                 if (existsAlreadyCode != null)
                     throw new ApplicationValidationException("Updated Code Already Exists");
 
@@ -100,15 +108,18 @@ namespace API.BLL.Services
 
             if (!string.IsNullOrWhiteSpace(department.Name))
             {
-                var existsAlreadyName = await departmentRepository.FindByName(department.Name);
+                var existsAlreadyName = await departmentRepository.FindSingleAsync(x => x.Name == department.Name);
                 if (existsAlreadyName != null)
                     throw new ApplicationValidationException("Updated Name Already Exists");
 
                 _department.Name = department.Name;
             }
 
-            if (await departmentRepository.UpdateAsync(_department))
-                return _department;
+            departmentRepository.UpdateAsync(_department);
+            if (await departmentRepository.SaveCompletedAsync())
+            {
+                return department;
+            }
 
             throw new ApplicationValidationException("An Error Occured Updating Data");
         }
