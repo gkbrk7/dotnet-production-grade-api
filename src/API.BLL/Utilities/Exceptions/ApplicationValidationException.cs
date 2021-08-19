@@ -1,7 +1,12 @@
+using System;
+
 namespace API.BLL.Utilities.Exceptions
 {
-    public class ApplicationValidationException
+    public class ApplicationValidationException : Exception
     {
-        
+        public ApplicationValidationException(string message) : base(message)
+        {
+
+        }
     }
 }

@@ -89,25 +89,25 @@ namespace API.BLL.Services
             if (_department == null)
                 throw new ApplicationValidationException("Department Not Found");
 
-            if (!string.IsNullOrWhiteSpace(_department.Code))
+            if (!string.IsNullOrWhiteSpace(department.Code))
             {
                 var existsAlreadyCode = await departmentRepository.FindByCode(department.Code);
                 if (existsAlreadyCode != null)
-                    new ApplicationValidationException("Updated Code Already Exists");
+                    throw new ApplicationValidationException("Updated Code Already Exists");
 
                 _department.Code = department.Code;
             }
 
-            if (!string.IsNullOrWhiteSpace(_department.Name))
+            if (!string.IsNullOrWhiteSpace(department.Name))
             {
                 var existsAlreadyName = await departmentRepository.FindByName(department.Name);
                 if (existsAlreadyName != null)
-                    new ApplicationValidationException("Updated Name Already Exists");
+                    throw new ApplicationValidationException("Updated Name Already Exists");
 
                 _department.Name = department.Name;
             }
 
-            if (await departmentRepository.UpdateAsync(department))
+            if (await departmentRepository.UpdateAsync(_department))
                 return _department;
 
             throw new ApplicationValidationException("An Error Occured Updating Data");
