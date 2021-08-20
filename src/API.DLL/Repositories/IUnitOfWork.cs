@@ -11,12 +11,11 @@ namespace API.DLL.Repositories
         Task<bool> SaveChangesAsync();
     }
 
-    public class UnitOfWork : IUnitOfWork, IAsyncDisposable
+    public class UnitOfWork : IUnitOfWork, IDisposable
     {
         private readonly ApplicationDbContext context;
         private IDepartmentRepository _departmentRepository;
-        private StudentRepository _studentRepository;
-        private bool disposed = false;
+        private IStudentRepository _studentRepository;
 
         public IDepartmentRepository DepartmentRepository => _departmentRepository ?? new DepartmentRepository(context);
         public IStudentRepository StudentRepository => _studentRepository ?? new StudentRepository(context);
@@ -30,10 +29,9 @@ namespace API.DLL.Repositories
             return await context.SaveChangesAsync() > 0;
         }
 
-        public async ValueTask DisposeAsync()
+        public void Dispose()
         {
             GC.SuppressFinalize(this);
-            await this.DisposeAsync();
         }
     }
 }

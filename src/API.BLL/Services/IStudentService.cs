@@ -1,5 +1,7 @@
 using System.Collections.Generic;
 using System.Threading.Tasks;
+using API.BLL.Request;
+using API.BLL.Response;
 using API.BLL.Utilities.Exceptions;
 using API.DLL.Models;
 using API.DLL.Repositories;
@@ -10,31 +12,32 @@ namespace API.BLL.Services
     {
         Task<IEnumerable<Student>> GetAllAsync();
         Task<Student> GetAsync(string email);
-        Task<Student> InsertAsync(Student student);
+        Task<StudentInsertResponseViewModel> InsertAsync(StudentInsertRequestViewModel studentRequest);
         Task<Student> UpdateAsync(string email, Student student);
         Task<Student> DeleteAsync(string email);
+        Task<bool> EmailExists(string email);
     }
 
     public class StudentService : IStudentService
     {
-        private readonly IStudentRepository studentRepository;
-        public StudentService(IStudentRepository studentRepository)
+        private readonly IUnitOfWork unitOfWork;
+        public StudentService(IUnitOfWork unitOfWork)
         {
-            this.studentRepository = studentRepository;
+            this.unitOfWork = unitOfWork;
         }
 
         public async Task<Student> DeleteAsync(string email)
         {
-            var dbStudent = await studentRepository.FindSingleAsync(x => x.Email == email);
+            var dbStudent = await unitOfWork.StudentRepository.FindSingleAsync(x => x.Email == email);
 
             if (dbStudent == null)
             {
                 throw new ApplicationValidationException("Student Not Found.");
             }
 
-            studentRepository.DeleteAsync(dbStudent);
+            unitOfWork.StudentRepository.DeleteAsync(dbStudent);
 
-            if (await studentRepository.SaveCompletedAsync())
+            if (await unitOfWork.StudentRepository.SaveCompletedAsync())
             {
                 return dbStudent;
             }
@@ -42,29 +45,53 @@ namespace API.BLL.Services
             throw new ApplicationValidationException("An Error Occured Deleting Data");
         }
 
+        public async Task<bool> EmailExists(string email)
+        {
+            var student = await unitOfWork.StudentRepository.FindSingleAsync(x => x.Email == email);
+
+            if (student != null)
+            {
+                return false;
+            }
+            return true;
+        }
+
         public async Task<IEnumerable<Student>> GetAllAsync()
         {
-            return await studentRepository.GetList();
+            return await unitOfWork.StudentRepository.GetList();
         }
 
         public async Task<Student> GetAsync(string email)
         {
-            return await studentRepository.FindSingleAsync(x => x.Email == email);
+            return await unitOfWork.StudentRepository.FindSingleAsync(x => x.Email == email);
         }
 
-        public async Task<Student> InsertAsync(Student student)
+        public async Task<StudentInsertResponseViewModel> InsertAsync(StudentInsertRequestViewModel studentRequest)
         {
-            await studentRepository.CreateAsync(student);
-            if (await studentRepository.SaveCompletedAsync())
+            var student = new Student
             {
-                return student;
+                Email = studentRequest.Email,
+                Name = studentRequest.Name,
+                DepartmentId = studentRequest.DepartmentId
+            };
+
+            await unitOfWork.StudentRepository.CreateAsync(student);
+            if (await unitOfWork.StudentRepository.SaveCompletedAsync())
+            {
+                return new StudentInsertResponseViewModel
+                {
+                    DepartmentId = student.DepartmentId,
+                    Email = student.Email,
+                    Name = student.Name,
+                    StudentId = student.StudentId
+                };
             }
             throw new ApplicationValidationException($"Student Insertion Operation Unsuccessful");
         }
 
         public async Task<Student> UpdateAsync(string email, Student student)
         {
-            var dbStudent = await studentRepository.FindSingleAsync(x => x.Email == email);
+            var dbStudent = await unitOfWork.StudentRepository.FindSingleAsync(x => x.Email == email);
 
             if (dbStudent == null)
             {
@@ -72,9 +99,9 @@ namespace API.BLL.Services
             }
 
             dbStudent.Name = student.Name;
-            studentRepository.UpdateAsync(dbStudent);
+            unitOfWork.StudentRepository.UpdateAsync(dbStudent);
 
-            if (await studentRepository.SaveCompletedAsync())
+            if (await unitOfWork.StudentRepository.SaveCompletedAsync())
             {
                 return dbStudent;
             }

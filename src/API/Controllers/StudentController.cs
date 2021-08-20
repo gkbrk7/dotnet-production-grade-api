@@ -1,6 +1,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using API.BLL.Request;
 using API.BLL.Services;
 using API.DLL.Models;
 using API.DLL.Repositories;
@@ -30,9 +31,9 @@ namespace API.Controllers
         }
 
         [HttpPost]
-        public async Task<IActionResult> Insert(Student student)
+        public async Task<IActionResult> Insert(StudentInsertRequestViewModel studentRequest)
         {
-            return Ok(await studentService.InsertAsync(student));
+            return Ok(await studentService.InsertAsync(studentRequest));
         }
 
         [HttpPut("{email}")]
