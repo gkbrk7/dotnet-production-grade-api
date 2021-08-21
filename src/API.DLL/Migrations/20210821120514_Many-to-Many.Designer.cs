@@ -4,14 +4,16 @@ using API.DLL.Contexts;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 namespace API.DLL.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20210821120514_Many-to-Many")]
+    partial class ManytoMany
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -36,7 +38,8 @@ namespace API.DLL.Migrations
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<decimal>("Credit")
-                        .HasColumnType("decimal(18,2)");
+                        .HasPrecision(16, 2)
+                        .HasColumnType("decimal(16,2)");
 
                     b.Property<bool>("IsDeleted")
                         .HasColumnType("bit");
@@ -52,7 +55,7 @@ namespace API.DLL.Migrations
 
                     b.HasKey("CourseId");
 
-                    b.ToTable("Courses");
+                    b.ToTable("Course");
                 });
 
             modelBuilder.Entity("API.DLL.Models.CourseStudent", b =>
@@ -92,7 +95,7 @@ namespace API.DLL.Migrations
 
                     b.HasIndex("StudentId1");
 
-                    b.ToTable("CourseStudents");
+                    b.ToTable("CourseStudent");
                 });
 
             modelBuilder.Entity("API.DLL.Models.Department", b =>
