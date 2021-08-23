@@ -1,9 +1,11 @@
+using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using API.DLL.Contexts;
 using API.DLL.Models;
 using API.DLL.Repositories;
 using Bogus;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 
 namespace API.BLL.Services
@@ -11,16 +13,64 @@ namespace API.BLL.Services
     public interface ITestService
     {
         Task DummyData();
+        Task AddRoles();
+        Task AddUsersWithRoles();
     }
 
     public class TestService : ITestService
     {
         private readonly IUnitOfWork unitOfWork;
         private readonly ApplicationDbContext context;
-        public TestService(IUnitOfWork unitOfWork, ApplicationDbContext context)
+        private readonly RoleManager<IdentityRole> roleManager;
+        private readonly UserManager<ApplicationUser> userManager;
+
+        public TestService(IUnitOfWork unitOfWork, ApplicationDbContext context, RoleManager<IdentityRole> roleManager, UserManager<ApplicationUser> userManager)
         {
             this.context = context;
+            this.roleManager = roleManager;
+            this.userManager = userManager;
             this.unitOfWork = unitOfWork;
+        }
+
+        public async Task AddRoles()
+        {
+            var roles = new List<string>{
+                "Admin",
+                "Manager",
+                "SuperAdmin"
+            };
+
+            foreach (var role in roles)
+            {
+                if (!await roleManager.RoleExistsAsync(role))
+                {
+                    await roleManager.CreateAsync(new IdentityRole { Name = role });
+                }
+            }
+        }
+
+        public async Task AddUsersWithRoles()
+        {
+            var users = new List<ApplicationUser>{
+                new ApplicationUser{Email = "gokberk@gokberk.com", UserName = "gokberk@gokberk.com"},
+                new ApplicationUser{Email = "gizem@gizem.com", UserName = "gizem@gizem.com"}
+            };
+
+            foreach (var user in users)
+            {
+                if (!context.Users.Any(x => x.Email == user.Email))
+                {
+                    var result = await userManager.CreateAsync(user, "Qwerty123!.");
+                    if (result.Succeeded && user.Email.Contains("gokberk"))
+                    {
+                        await userManager.AddToRoleAsync(user, "SuperAdmin");
+                    }
+                    else if (result.Succeeded)
+                    {
+                        await userManager.AddToRoleAsync(user, "Admin");
+                    }
+                }
+            }
         }
 
         public async Task DummyData()
