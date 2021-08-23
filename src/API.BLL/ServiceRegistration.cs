@@ -14,6 +14,7 @@ namespace API.BLL
             services.AddTransient<IDepartmentService, DepartmentService>();
             services.AddTransient<IStudentService, StudentService>();
             services.AddTransient<ICourseService, CourseService>();
+            services.AddTransient<ICourseStudentService, CourseStudentService>();
             #endregion
 
             services.AddFluentValidation(options => options.RegisterValidatorsFromAssembly(Assembly.GetExecutingAssembly()));

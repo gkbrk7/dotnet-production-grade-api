@@ -63,9 +63,6 @@ namespace API.DLL.Migrations
                     b.Property<int>("StudentId")
                         .HasColumnType("int");
 
-                    b.Property<int?>("CourseId1")
-                        .HasColumnType("int");
-
                     b.Property<DateTimeOffset>("CreatedAt")
                         .HasColumnType("datetimeoffset");
 
@@ -81,16 +78,9 @@ namespace API.DLL.Migrations
                     b.Property<string>("LastUpdatedBy")
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<int?>("StudentId1")
-                        .HasColumnType("int");
-
                     b.HasKey("CourseId", "StudentId");
 
-                    b.HasIndex("CourseId1");
-
                     b.HasIndex("StudentId");
-
-                    b.HasIndex("StudentId1");
 
                     b.ToTable("CourseStudents");
                 });
@@ -168,25 +158,17 @@ namespace API.DLL.Migrations
 
             modelBuilder.Entity("API.DLL.Models.CourseStudent", b =>
                 {
-                    b.HasOne("API.DLL.Models.Course", null)
+                    b.HasOne("API.DLL.Models.Course", "Course")
                         .WithMany("CourseStudents")
                         .HasForeignKey("CourseId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("API.DLL.Models.Course", "Course")
-                        .WithMany()
-                        .HasForeignKey("CourseId1");
-
-                    b.HasOne("API.DLL.Models.Student", null)
+                    b.HasOne("API.DLL.Models.Student", "Student")
                         .WithMany("CourseStudents")
                         .HasForeignKey("StudentId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
-
-                    b.HasOne("API.DLL.Models.Student", "Student")
-                        .WithMany()
-                        .HasForeignKey("StudentId1");
 
                     b.Navigation("Course");
 

@@ -39,8 +39,8 @@ namespace API.DLL.Contexts
             }
 
             modelBuilder.Entity<CourseStudent>().HasKey(cs => new { cs.CourseId, cs.StudentId });
-            modelBuilder.Entity<CourseStudent>().HasOne<Course>().WithMany(x => x.CourseStudents).HasForeignKey(x => x.CourseId);
-            modelBuilder.Entity<CourseStudent>().HasOne<Student>().WithMany(x => x.CourseStudents).HasForeignKey(x => x.StudentId);
+            // modelBuilder.Entity<CourseStudent>().HasOne<Course>().WithMany(x => x.CourseStudents).HasForeignKey(x => x.CourseId);
+            // modelBuilder.Entity<CourseStudent>().HasOne<Student>().WithMany(x => x.CourseStudents).HasForeignKey(x => x.StudentId);
             base.OnModelCreating(modelBuilder);
         }
 

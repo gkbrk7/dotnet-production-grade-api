@@ -17,6 +17,7 @@ namespace API.BLL.Services
         Task<bool> IsCodeExists(string code);
         Task<bool> IsNameExists(string name);
         Task<bool> IsIdExists(int courseId);
+        Task<bool> IsCourseIdExists(int id);
     }
 
     public class CourseService : ICourseService
@@ -98,6 +99,15 @@ namespace API.BLL.Services
                 return true;
 
             return false;
+        }
+
+        public async Task<bool> IsCourseIdExists(int id)
+        {
+            var course = await unitOfWork.CourseRepository.FindSingleAsync(x => x.CourseId == id);
+            if (course == null)
+                return false;
+
+            return true;
         }
 
         public async Task<Course> UpdateAsync(string code, Course course)
