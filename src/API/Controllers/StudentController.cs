@@ -5,6 +5,7 @@ using API.BLL.Request;
 using API.BLL.Services;
 using API.DLL.Models;
 using API.DLL.Repositories;
+using LightQuery.EntityFrameworkCore;
 using Microsoft.AspNetCore.Mvc;
 
 namespace API.Controllers
@@ -19,6 +20,7 @@ namespace API.Controllers
         }
 
         [HttpGet]
+        [AsyncLightQuery(forcePagination: true, defaultPageSize: 25, defaultSort: "name asc")]
         public async Task<IActionResult> GetAll()
         {
             return Ok(await studentService.GetAllAsync());

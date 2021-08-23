@@ -5,6 +5,7 @@ using API.BLL.Request;
 using API.BLL.Services;
 using API.DLL.Models;
 using API.DLL.Repositories;
+using LightQuery.EntityFrameworkCore;
 using Microsoft.AspNetCore.Mvc;
 
 namespace API.Controllers
@@ -18,7 +19,11 @@ namespace API.Controllers
             this.departmentService = departmentService;
         }
 
+        // https://localhost:5001/api/v1/Department?pageSize=50&page=1&sort=name%20desc
+        // https://localhost:5001/api/v1/Department?pageSize=50&page=1&sort=name
+        // Result must be IQueryable 
         [HttpGet]
+        [AsyncLightQuery(forcePagination: true, defaultPageSize: 10, defaultSort: "departmentId desc")]
         public async Task<IActionResult> GetAll()
         {
             return Ok(await departmentService.GetAllAsync());

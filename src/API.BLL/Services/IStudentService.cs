@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
 using API.BLL.Request;
 using API.BLL.Response;
@@ -10,7 +11,7 @@ namespace API.BLL.Services
 {
     public interface IStudentService
     {
-        Task<IEnumerable<Student>> GetAllAsync();
+        Task<IQueryable<Student>> GetAllAsync();
         Task<Student> GetAsync(string email);
         Task<StudentInsertResponseViewModel> InsertAsync(StudentInsertRequestViewModel studentRequest);
         Task<Student> UpdateAsync(string email, Student student);
@@ -68,9 +69,9 @@ namespace API.BLL.Services
             return true;
         }
 
-        public async Task<IEnumerable<Student>> GetAllAsync()
+        public async Task<IQueryable<Student>> GetAllAsync()
         {
-            return await unitOfWork.StudentRepository.GetList();
+            return await unitOfWork.StudentRepository.QueryAll();
         }
 
         public async Task<Student> GetAsync(string email)

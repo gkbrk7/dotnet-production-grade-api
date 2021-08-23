@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
 using API.BLL.Request;
 using API.BLL.Utilities.Exceptions;
@@ -9,7 +10,7 @@ namespace API.BLL.Services
 {
     public interface IDepartmentService
     {
-        Task<IEnumerable<Department>> GetAllAsync();
+        Task<IQueryable<Department>> GetAllAsync();
         Task<Department> GetAsync(string code);
         Task<Department> InsertAsync(DepartmentInsertRequestViewModel request);
         Task<Department> UpdateAsync(string code, Department department);
@@ -41,9 +42,9 @@ namespace API.BLL.Services
             throw new ApplicationValidationException("An Error Occured Deleting Data");
         }
 
-        public async Task<IEnumerable<Department>> GetAllAsync()
+        public async Task<IQueryable<Department>> GetAllAsync()
         {
-            return await unitOfWork.DepartmentRepository.GetList();
+            return await unitOfWork.DepartmentRepository.QueryAll();
         }
 
         public async Task<Department> GetAsync(string code)

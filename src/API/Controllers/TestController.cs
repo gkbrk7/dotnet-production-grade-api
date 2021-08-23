@@ -15,7 +15,7 @@ namespace API.Controllers
         [HttpGet]
         public async Task<IActionResult> LoadDummyData()
         {
-            await testService.DummyData();
+            //await testService.DummyData();
             return Ok("All dummy data loaded into database");
         }
     }
