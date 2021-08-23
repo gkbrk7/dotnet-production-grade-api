@@ -4,12 +4,14 @@ using API.BLL.Utilities.Exceptions;
 using API.BLL.Utilities.Models;
 using API.DLL.Models;
 using API.DLL.Repositories;
+using API.DLL.ResponseViewModels;
 
 namespace API.BLL.Services
 {
     public interface ICourseStudentService
     {
         Task<ApiSuccessResponse> InsertAsync(CourseAssignInsertViewModel request);
+        Task<StudentCourseViewModel> CourseListAsync(int studentId);
     }
 
     public class CourseStudentService : ICourseStudentService
@@ -20,6 +22,12 @@ namespace API.BLL.Services
         {
             this.unitOfWork = unitOfWork;
         }
+
+        public async Task<StudentCourseViewModel> CourseListAsync(int studentId)
+        {
+            return await unitOfWork.StudentRepository.GetSpecificStudentCourseListAsync(studentId);
+        }
+
         public async Task<ApiSuccessResponse> InsertAsync(CourseAssignInsertViewModel request)
         {
             var isStudentAlreadyEnroll = await unitOfWork.CourseStudentRepository.FindSingleAsync(x => x.StudentId == request.StudentId && x.CourseId == request.CourseId);
