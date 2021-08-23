@@ -7,9 +7,12 @@ namespace API.Controllers
     public class TestController : BaseApiController
     {
         private readonly ITestService testService;
-        public TestController(ITestService testService)
+        private readonly ITransactionService transactionService;
+
+        public TestController(ITestService testService, ITransactionService transactionService)
         {
             this.testService = testService;
+            this.transactionService = transactionService;
         }
 
         [HttpGet]
@@ -17,7 +20,8 @@ namespace API.Controllers
         {
             // await testService.DummyData();
             // await testService.AddRoles();
-            await testService.AddUsersWithRoles();
+            // await testService.AddUsersWithRoles();
+            await transactionService.FinancialTransaction();
             return Ok("All dummy data loaded into database");
         }
     }

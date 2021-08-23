@@ -15,6 +15,7 @@ namespace API.BLL
             services.AddTransient<IStudentService, StudentService>();
             services.AddTransient<ICourseService, CourseService>();
             services.AddTransient<ICourseStudentService, CourseStudentService>();
+            services.AddTransient<ITransactionService, TransactionService>();
             services.AddTransient<ITestService, TestService>();
             #endregion
 

@@ -87,6 +87,8 @@ namespace API.DLL.Contexts
         public DbSet<Student> Students { get; set; }
         public DbSet<Course> Courses { get; set; }
         public DbSet<CourseStudent> CourseStudents { get; set; }
+        public DbSet<CustomerBalance> CustomerBalances { get; set; }
+        public DbSet<TransactionHistory> TransactionHistories { get; set; }
 
     }
 }
